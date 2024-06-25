@@ -64,3 +64,6 @@ gradle-app.properties
 **/gradlew.bat
 **/gradle-wrapper.properties
 
+
+# etc
+*.yml
