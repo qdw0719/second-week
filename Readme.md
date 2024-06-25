@@ -46,7 +46,7 @@
 
 ### 3. ERD
 
-
+![STEP3_ERD](https://github.com/qdw0719/second-week/assets/84309890/7f827f5b-7800-44bb-91f3-78d23ee55dd1)
 
 
 
