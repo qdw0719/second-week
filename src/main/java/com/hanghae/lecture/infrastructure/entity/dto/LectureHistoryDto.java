@@ -1,6 +1,6 @@
-package com.hanghae.lecture.presentation.dto;
+package com.hanghae.lecture.infrastructure.entity.dto;
 
-import com.hanghae.lecture.domain.model.LectureActionStatus;
+import com.hanghae.lecture.infrastructure.entity.LectureActionStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;

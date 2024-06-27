@@ -1,6 +1,6 @@
-package com.hanghae.lecture.domain.model;
+package com.hanghae.lecture.infrastructure.entity;
 
-import com.hanghae.lecture.presentation.dto.LectureUserDto;
+import com.hanghae.lecture.infrastructure.entity.dto.LectureUserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,11 +17,13 @@ public class LectureUser {
     private Long lectureId;
     private Long userId;
 
+    private int successOrder;
+
     public LectureUserDto toDto() {
-        return new LectureUserDto(id, lectureId, userId);
+        return new LectureUserDto(id, lectureId, userId, successOrder);
     }
 
     public static LectureUser fromDto(LectureUserDto dto) {
-        return new LectureUser(dto.getId(), dto.getLectureId(), dto.getUserId());
+        return new LectureUser(dto.getId(), dto.getLectureId(), dto.getUserId(), dto.getSuccessOrder());
     }
 }

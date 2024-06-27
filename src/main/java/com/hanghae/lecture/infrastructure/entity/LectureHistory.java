@@ -1,6 +1,6 @@
-package com.hanghae.lecture.domain.model;
+package com.hanghae.lecture.infrastructure.entity;
 
-import com.hanghae.lecture.presentation.dto.LectureHistoryDto;
+import com.hanghae.lecture.infrastructure.entity.dto.LectureHistoryDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.hanghae.lecture.presentation.dto;
+package com.hanghae.lecture.infrastructure.entity.dto;
 
 import lombok.*;
 
@@ -8,4 +8,5 @@ public class LectureUserDto {
     private Long id;
     private Long lectureId;
     private Long userId;
+    private int successOrder;
 }
