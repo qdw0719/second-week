@@ -1,6 +1,6 @@
-package com.hanghae.lecture.domain.repository;
+package com.hanghae.lecture.Business.repository;
 
-import com.hanghae.lecture.domain.model.Lecture;
+import com.hanghae.lecture.infrastructure.entity.Lecture;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,4 +13,6 @@ public interface LectureRepository {
     long count();
     void deleteAll();
     Optional<Lecture> findByIdWithPessimisticLock(Long lectureId);
+    Optional<Lecture> findFirstByTitle(String title);
+    Iterable<Lecture> saveAll(List<Lecture> lectures);
 }

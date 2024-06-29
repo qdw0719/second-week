@@ -1,4 +1,4 @@
-package com.hanghae.lecture.presentation.dto;
+package com.hanghae.lecture.infrastructure.entity.dto;
 
 import lombok.*;
 

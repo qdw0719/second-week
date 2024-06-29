@@ -1,11 +1,11 @@
 package com.hanghae.lecture.presentation.controller;
 
-import com.hanghae.lecture.domain.model.Lecture;
-import com.hanghae.lecture.domain.model.User;
-import com.hanghae.lecture.domain.repository.LectureRepository;
-import com.hanghae.lecture.domain.repository.LectureUserRepository;
-import com.hanghae.lecture.domain.repository.UserRepository;
-import com.hanghae.lecture.presentation.dto.UserDto;
+import com.hanghae.lecture.infrastructure.entity.Lecture;
+import com.hanghae.lecture.infrastructure.entity.User;
+import com.hanghae.lecture.Business.repository.LectureRepository;
+import com.hanghae.lecture.Business.repository.LectureUserRepository;
+import com.hanghae.lecture.Business.repository.UserRepository;
+import com.hanghae.lecture.infrastructure.entity.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,10 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +63,7 @@ class LectureControllerTest {
         User user = new User(null, "user1");
         userRepository.save(user);
 
-        Lecture lecture = new Lecture(null, "Lecture01", "L_0001", LocalDateTime.now(), 30);
+        Lecture lecture = new Lecture(null, "Lecture01", "L_0001", 30, "THURSDAY", "21:00");
         lectureRepository.save(lecture);
 
         mockMvc.perform(post("/lectures/apply")
@@ -75,7 +76,8 @@ class LectureControllerTest {
     void applyLectureTest() throws Exception {
         User user = new User(null, "user1");
         userRepository.save(user);
-        Lecture lecture = new Lecture(null, "Lecture02", "L_0002", LocalDateTime.now(), 30);
+
+        Lecture lecture = new Lecture(null, "Lecture02", "L_0002", 30, "THURSDAY", "21:00");
         lectureRepository.save(lecture);
 
         mockMvc.perform(post("/lectures/apply")
@@ -90,7 +92,8 @@ class LectureControllerTest {
     void checkLectureStatusTest() throws Exception {
         User user = new User(null, "user1");
         userRepository.save(user);
-        Lecture lecture = new Lecture(null, "Lecture03", "L_0003", LocalDateTime.now(), 30);
+
+        Lecture lecture = new Lecture(null, "Lecture03", "L_0003",  30, "THURSDAY", "21:00");
         lectureRepository.save(lecture);
 
         // 먼저 수강 신청
@@ -110,7 +113,8 @@ class LectureControllerTest {
     void checkApplicationStatusFailTest() throws Exception {
         User user = new User(null, "user1");
         userRepository.save(user);
-        Lecture lecture = new Lecture(null, "Lecture04", "L_0004", LocalDateTime.now(), 30);
+
+        Lecture lecture = new Lecture(null, "Lecture04", "L_0004",  30, "THURSDAY", "21:00");
         lectureRepository.save(lecture);
 
         // 수강 신청하지 않은 상태에서 신청 여부 확인
@@ -123,10 +127,12 @@ class LectureControllerTest {
     @Test @DisplayName("모든 강의 조회 테스트")
     @Transactional
     void getAllLecturesTest() throws Exception {
-        Lecture lecture1 = new Lecture(null, "Lecture05", "L_0005", LocalDateTime.now(), 30);
-        Lecture lecture2 = new Lecture(null, "Lecture06", "L_0006", LocalDateTime.now(), 30);
-        lectureRepository.save(lecture1);
-        lectureRepository.save(lecture2);
+        List<Lecture> lectures = List.of(
+                new Lecture(null, "Lecture05", "L_0005",30, "THURSDAY", "21:00"),
+                new Lecture(null, "Lecture06", "L_0006", 30, "SUNDAY", "13:00")
+        );
+
+        lectureRepository.saveAll(lectures);
 
         mockMvc.perform(get("/lectures"))
                 .andExpect(status().isOk())
@@ -139,7 +145,8 @@ class LectureControllerTest {
     void duplicateLectureTest() throws Exception {
         User user = new User(null, "user1");
         userRepository.save(user);
-        Lecture lecture = new Lecture(null, "Lecture07", "L_0007", LocalDateTime.now(), 30);
+
+        Lecture lecture = new Lecture(null, "Lecture07", "L_0007",  30, "THURSDAY", "21:00");
         lectureRepository.save(lecture);
 
         // 첫 번째 신청 성공
@@ -152,14 +159,15 @@ class LectureControllerTest {
         mockMvc.perform(post("/lectures/apply")
                         .param("lectureId", lecture.getId().toString())
                         .param("userId", user.getId().toString()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest()); // 400 error, DuplicateLectureRequestException
     }
 
-    @Test @DisplayName("강의 오픈 전 신청 실패 테스트")
+    @Test @DisplayName("수강 신청 가능 시간이 아닐 때 신청")
     void lectureNotOpenTest() throws Exception {
         User user = new User(null, "user1");
         userRepository.save(user);
-        Lecture lecture = new Lecture(null, "Lecture08", "L_0008", LocalDateTime.of(2024, 12, 31, 23, 59), 30);
+
+        Lecture lecture = new Lecture(null, "Lecture08", "L_0008", 30, "SUNDAY", "13:00");
         lectureRepository.save(lecture);
 
         mockMvc.perform(post("/lectures/apply")
@@ -171,7 +179,7 @@ class LectureControllerTest {
     @Test @DisplayName("다수 유저의 강의 신청 테스트")
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void concurrentApplyLectureTest() throws Exception {
-        Lecture lecture = new Lecture(null, "Lecture09", "L_0009", LocalDateTime.now(), 30);
+        Lecture lecture = new Lecture(null, "Lecture09", "L_0009",  30, "THURSDAY", "21:00");
         lectureRepository.save(lecture);
 
         List<UserDto> users = new ArrayList<>();
@@ -182,6 +190,8 @@ class LectureControllerTest {
             users.add(savedUser.toDto());
 //            System.out.println("Saved User ID: " + savedUser.getId()); // 사용자 저장 로그 추가
         }
+
+        ExecutorService executor = Executors.newFixedThreadPool(userCount);
 
         List<CompletableFuture<Integer>> futures = new ArrayList<>();
         for (int i = 0; i < userCount; i++) {
@@ -203,7 +213,7 @@ class LectureControllerTest {
 //                    System.err.println("Error applying lecture for user ID: " + users.get(index).getId());
                     return 500;
                 }
-            });
+            }, executor);
             futures.add(future);
         }
 

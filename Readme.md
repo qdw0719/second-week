@@ -37,16 +37,16 @@
 &emsp;&emsp; 1) 유효하지 않은 사용자로 강의 신청 시도 <br />
 &emsp;&emsp; 2) 강의 신청 테스트(단일유저) <br />
 &emsp;&emsp; 3) 강의 신청 여부 조회 테스트(수강중인 강의가 있을 떄) <br />
-&emsp;&emsp; 4) 강의 신청 여부 조회 테스트(수강중인 강의가 없는 상태) <br />
+&emsp;&emsp; 4) 강의 신청 여부 조회 실패 테스트(수강중인 강의가 없는 상태) <br />
 &emsp;&emsp; 5) 모든 강의 조회 테스트 <br />
 &emsp;&emsp; 6) 중복 신청 테스트 <br />
-&emsp;&emsp; 7) 강의 오픈 전 신청 테스트 <br />
+&emsp;&emsp; 7) 강의 오픈 전 신청 테스트 → 수강 신청 가능 시간이 아닐 때 신청<br />
 &emsp;&emsp; 8) 강의 신청 테스트(다수유저) <br />
 
 
 ### 3. ERD
 
-![STEP3_ERD](https://github.com/qdw0719/second-week/assets/84309890/7f827f5b-7800-44bb-91f3-78d23ee55dd1)
+![STEP4_ERD](https://github.com/qdw0719/second-week/assets/84309890/ffa08122-45b6-4548-88bb-984ed29409c9)
 
 
 
@@ -54,7 +54,7 @@
 ### 4. etc.. 고민,,, 고난... 역경....
 
 1. STEP 3 를 하면서,, H2로 할 때는 왜 동시성 제어가 되질 않았는가,,, <br /> → h2 db를 사용하다가 결국 MySQL로 변경...  
-2. 
+2. step 4 ...무난했다,,,
 
 
 

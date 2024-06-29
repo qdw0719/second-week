@@ -1,7 +1,7 @@
 package com.hanghae.lecture.infrastructure.repository;
 
-import com.hanghae.lecture.domain.model.User;
-import com.hanghae.lecture.domain.repository.UserRepository;
+import com.hanghae.lecture.infrastructure.entity.User;
+import com.hanghae.lecture.Business.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

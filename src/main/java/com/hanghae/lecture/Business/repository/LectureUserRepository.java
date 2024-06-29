@@ -1,6 +1,6 @@
-package com.hanghae.lecture.domain.repository;
+package com.hanghae.lecture.Business.repository;
 
-import com.hanghae.lecture.domain.model.LectureUser;
+import com.hanghae.lecture.infrastructure.entity.LectureUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,4 +11,5 @@ public interface LectureUserRepository {
     LectureUser save(LectureUser lectureUser);
     long countByLectureId(Long lectureId);
     void deleteAll();
+    Optional<LectureUser> findByUserId(Long userId);
 }

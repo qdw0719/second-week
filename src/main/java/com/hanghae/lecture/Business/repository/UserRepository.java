@@ -1,6 +1,6 @@
-package com.hanghae.lecture.domain.repository;
+package com.hanghae.lecture.Business.repository;
 
-import com.hanghae.lecture.domain.model.User;
+import com.hanghae.lecture.infrastructure.entity.User;
 
 import java.util.List;
 import java.util.Optional;

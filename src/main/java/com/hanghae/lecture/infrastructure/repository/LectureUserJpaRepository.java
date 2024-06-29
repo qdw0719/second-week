@@ -1,8 +1,7 @@
 package com.hanghae.lecture.infrastructure.repository;
 
-import com.hanghae.lecture.domain.model.LectureUser;
+import com.hanghae.lecture.infrastructure.entity.LectureUser;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,4 +12,5 @@ public interface LectureUserJpaRepository extends JpaRepository<LectureUser, Lon
     List<LectureUser> findByLectureId(Long lectureId);
     Optional<LectureUser> findByLectureIdAndUserId(Long lectureId, Long userId);
     long countByLectureId(Long lectureId);
+    Optional<LectureUser> findByUserId(Long userId);
 }

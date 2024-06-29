@@ -1,7 +1,7 @@
 package com.hanghae.lecture.infrastructure.repository;
 
-import com.hanghae.lecture.domain.model.LectureUser;
-import com.hanghae.lecture.domain.repository.LectureUserRepository;
+import com.hanghae.lecture.infrastructure.entity.LectureUser;
+import com.hanghae.lecture.Business.repository.LectureUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -37,5 +37,10 @@ public class LectureUserRepositoryImpl implements LectureUserRepository {
     @Override
     public void deleteAll() {
         lectureUserJpaRepository.deleteAll();
+    }
+
+    @Override
+    public Optional<LectureUser> findByUserId(Long userId) {
+        return lectureUserJpaRepository.findByUserId(userId);
     }
 }

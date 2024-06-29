@@ -1,9 +1,14 @@
 package com.hanghae.lecture.presentation.service;
 
+import com.hanghae.lecture.Business.service.LectureService;
+import com.hanghae.lecture.infrastructure.entity.dto.LectureDto;
+import com.hanghae.lecture.infrastructure.entity.dto.LectureUserDto;
 import com.hanghae.lecture.common.exception.*;
-import com.hanghae.lecture.domain.model.*;
-import com.hanghae.lecture.domain.repository.*;
-import com.hanghae.lecture.presentation.dto.*;
+import com.hanghae.lecture.Business.repository.*;
+import com.hanghae.lecture.infrastructure.entity.Lecture;
+import com.hanghae.lecture.infrastructure.entity.LectureHistory;
+import com.hanghae.lecture.infrastructure.entity.LectureUser;
+import com.hanghae.lecture.infrastructure.entity.User;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
@@ -15,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
 
@@ -52,7 +56,7 @@ class LectureServiceTest {
         MockitoAnnotations.openMocks(this);
 
         user = new User(1L, "user1");
-        lecture = new Lecture(1L, "Lecture01", "L_0001", LocalDateTime.now().minusDays(1), 30);
+        lecture = new Lecture(1L, "Lecture01", "L_0001",30, "THURSDAY", "21:00");
 
         when(userRepository.save(user)).thenReturn(user);
         when(lectureRepository.save(lecture)).thenReturn(lecture);
@@ -66,10 +70,10 @@ class LectureServiceTest {
     void generateLectureCodeTest() {
         when(lectureRepository.count()).thenReturn(0L);
 
-        Lecture lecture = new Lecture(null, "Lecture01", "L_0001", LocalDateTime.now(), 30);
+        lecture = new Lecture(1L, "Lecture01", "L_0001", 30, "THURSDAY", "21:00");
         when(lectureRepository.save(any(Lecture.class))).thenReturn(lecture);
 
-        LectureDto generatedLecture = lectureService.createLecture("Lecture01", LocalDateTime.now(), 30);
+        LectureDto generatedLecture = lectureService.generatedLecture("Lecture01",30, "THURSDAY", "21:00");
 
         assertEquals("L_0001", generatedLecture.getLectureCode());
     }
@@ -77,15 +81,16 @@ class LectureServiceTest {
     @Test @DisplayName("모든 강의 조회 테스트")
     void getAllLecturesTest() {
         List<Lecture> lectures = List.of(
-                new Lecture(1L, "Lecture01", "L_0001", LocalDateTime.now(), 30),
-                new Lecture(2L, "Lecture02", "L_0002", LocalDateTime.now(), 30)
+                new Lecture(1L, "Lecture01", "L_0001",30, "THURSDAY", "21:00"),
+                new Lecture(2L, "Lecture02", "L_0002", 30, "SUNDAY", "13:00"),
+                new Lecture(3L, "Lecture03", "L_0003", 30, "SUNDAY", "18:00")
         );
 
         when(lectureRepository.findAll()).thenReturn(lectures);
 
         List<LectureDto> lectureDtoList = lectureService.getAllLectures();
 
-        assertEquals(2, lectureDtoList.size());
+        assertEquals(3, lectureDtoList.size());
         assertEquals("L_0001", lectureDtoList.get(0).getLectureCode());
         assertEquals("L_0002", lectureDtoList.get(1).getLectureCode());
     }
@@ -98,7 +103,7 @@ class LectureServiceTest {
         when(lectureUserRepository.countByLectureId(lectureId)).thenReturn(0L);
         when(lectureUserRepository.findByLectureIdAndUserId(lectureId, userId)).thenReturn(Optional.empty());
 
-        LectureUser savedLectureUser = new LectureUser(1L, lectureId, userId);
+        LectureUser savedLectureUser = new LectureUser(1L, lectureId, userId, 1);
         when(lectureUserRepository.save(any(LectureUser.class))).thenReturn(savedLectureUser);
 
         LectureUserDto lectureUserDto = lectureService.applyLecture(lectureId, userId);
@@ -107,6 +112,7 @@ class LectureServiceTest {
         assertEquals(lectureId, lectureUserDto.getLectureId());
         assertEquals(userId, lectureUserDto.getUserId());
         assertEquals(1L, lectureUserDto.getId());
+        assertEquals(1, lectureUserDto.getSuccessOrder());
     }
 
     @Test @DisplayName("수강 신청 상태 확인 테스트")
@@ -121,18 +127,10 @@ class LectureServiceTest {
         assertTrue(status);
     }
 
-    // ------------------------------------------------
-    // 수강신청 실패 테스트
-    // ------------------------------------------------
-
-    @Test @DisplayName("강의 오픈 전 신청 실패 테스트")
-    void lectureNotOpenApplicationTest() {
+    @Test @DisplayName("수강 신청 가능 시간이 아닐 때 신청")
+    void applyLectureNotOpenTest() {
         long lectureId = 1L;
         long userId = 1L;
-
-        lecture.setLectureOpenTime(LocalDateTime.now().plusDays(1));
-
-        when(lectureRepository.findById(lectureId)).thenReturn(Optional.of(lecture));
 
         assertThrows(LectureNotOpenException.class, () -> lectureService.applyLecture(lectureId, userId));
     }
@@ -142,7 +140,7 @@ class LectureServiceTest {
         long lectureId = 1L;
         long userId = 1L;
 
-        when(lectureUserRepository.findByLectureIdAndUserId(lectureId, userId)).thenReturn(Optional.of(new LectureUser(1L, lectureId, userId)));
+        when(lectureUserRepository.findByLectureIdAndUserId(lectureId, userId)).thenReturn(Optional.of(new LectureUser(1L, lectureId, userId, 1)));
 
         assertThrows(DuplicateLectureRequestException.class, () -> lectureService.applyLecture(lectureId, userId));
     }

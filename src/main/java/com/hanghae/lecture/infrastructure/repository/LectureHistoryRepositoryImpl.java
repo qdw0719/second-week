@@ -1,7 +1,7 @@
 package com.hanghae.lecture.infrastructure.repository;
 
-import com.hanghae.lecture.domain.model.LectureHistory;
-import com.hanghae.lecture.domain.repository.LectureHistoryRepository;
+import com.hanghae.lecture.infrastructure.entity.LectureHistory;
+import com.hanghae.lecture.Business.repository.LectureHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
